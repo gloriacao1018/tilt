@@ -1,12 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>hello world</h1>
+<meta charset="utf-8" />
+<title>Tilt</title>
+
+<!-- zimjs.com - JavaScript Canvas Framework -->
+<script type=module>
+
+import zim from "https://zimjs.org/cdn/016/zim";
+
+// See Docs under Frame for FIT, FILL, FULL, and TAG
+new Frame(FIT, 1024, 768, light, dark, ["audio1.mp3", "audio2.mp3"], "assets/", ready);
+function ready() {
     
-</body>
+    const audio1 = new Audio("audio1.mp3"); // For rotation about the Y-axis
+    const audio2 = new Audio("audio2.mp3"); // For rotation about the X-axis
+
+    const permissionType = 'deviceorientation';
+    const ask = new PermissionAsk(init, permissionType);
+    function init(yes) {
+        if (yes) {
+            // Permission granted
+            window.addEventListener('deviceorientation', handleOrientation);
+            const errorPane = new Pane("SENSOR not available",yellow);
+            label.text = decimals(e.rotation.x) +","+ decimals(e.rotation.y) +","+ decimals(e.rotation.z);
+            S.update();
+        } else {
+            // Permission denied or not available
+            errorPane.show();
+        }
+    }
+
+    function handleOrientation(event) {
+        const xRotation = event.beta;  // -180 to 180
+        const yRotation = event.gamma; // -90 to 90
+
+        // Play audio based on Y-axis rotation
+        if (yRotation > -90 && yRotation < 90) {
+            audio1.play();
+        }
+
+        // Play audio based on X-axis rotation
+        if (xRotation > -180 && xRotation < 180) {
+            audio2.play();
+        }
+    }
+        
+} // end ready
+
+</script>
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+</head>
+<body></body>
 </html>
