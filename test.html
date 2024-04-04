@@ -27,15 +27,11 @@ function ready() {
         F.on("deviceorientation", e=>{
         label.text = decimals(e.rotation.y,2) ;
         ball.loc(W/2 + e.rotation.y , H/2);
-        const a1 = audio1.play();
-        const a2 = audio2.play();
-
+        
         if (ball.x > W/2) {
-            a1.volume=0;
-            a2.volume=1;
+            audio1.play();
         } else {
-            a1.volume=1;
-            a2.volume=0;        
+            audio2.play();
         }
         S.update();
         });
