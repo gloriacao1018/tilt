@@ -10,7 +10,7 @@
 import zim from "https://zimjs.org/cdn/016/zim";
 
 // See Docs under Frame for FIT, FILL, FULL, and TAG
-new Frame(FIT, 1024, 768, light, dark, ready, ["1.mp3", "2.mp3"], "assets/");
+new Frame({scaling:FIT, width: 1024, height: 768, color: light, outerColor: dark, ready: ready, assets:["1.mp3", "2.mp3"], path: "assets/", sensors:true});
 function ready() {
 
     const audio1 = new Audio("1.mp3"); // For rotation about the Y-axis
@@ -23,8 +23,12 @@ function ready() {
     // if the user answers yes to the PermissionAsk
     const errorPane = new Pane("SENSOR not available",yellow);
     if (yes) {      
-        // use the sensors       
-        label.text = decimals(e.rotation.x) +","+ decimals(e.rotation.y) +","+ decimals(e.rotation.z);
+        // use the sensors      e 
+        const label = new Label().center();
+        F.on("devicemotion", (e)=>{
+            label.text = decimals(e.rotation.x) +","+ decimals(e.rotation.y) +","+ decimals(e.rotation.z);
+            S.update();
+        })
         S.update();
     } else { // answered no to PermissionAsk dialog      
         errorPane.show();
