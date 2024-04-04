@@ -1,54 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-<meta charset="utf-8" />
-<title>ZIM - Code Creativity</title>
+  <head>
+    <meta charset="utf-8" />
+    <title>ZIM - Code Creativity</title>
 
-<!-- zimjs.com - JavaScript Canvas Framework -->
-<script type=module>
+    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/016/zim";
 
-import zim from "https://zimjs.org/cdn/016/zim";
+      // See Docs under Frame for FIT, FILL, FULL, and TAG
+      new Frame({
+        scaling: FIT,
+        width: 1290,
+        height: 2796,
+        color: yellow,
+        outerColor: dark,
+        ready: ready,
+        assets: ["1.mp3", "2.mp3"],
+        path: "assets/",
+        sensors: true,
+      });
+      function ready() {
+        const audio1 = new Aud("1.mp3");
+        const audio2 = new Aud("2.mp3");
+        const ball = new Circle().center();
 
-// See Docs under Frame for FIT, FILL, FULL, and TAG
-new Frame({scaling:FIT, width: 1024, height: 768, color: pink, outerColor: dark, ready: ready, assets:["1.mp3", "2.mp3"], path: "assets/", sensors:true});
-function ready() {
+        const permissionType = "deviceorientation";
+        const ask = new PermissionAsk(init, permissionType);
+        function init(yes) {
+          const errorPane = new Pane("SENSOR not available", yellow);
+          if (yes) {
+            const label = new Label().center();
+            const a1 = audio1.play();
+            const a2 = audio2.play();
 
-    const audio1 = new Aud("1.mp3"); 
-    const audio2 = new Aud("2.mp3"); 
-    const ball = new Circle().center()
-    
-    const permissionType = "deviceorientation"; 
-    const ask = new PermissionAsk(init, permissionType);
-    function init(yes) {
+            F.on("deviceorientation", (e) => {
+              label.text = decimals(e.rotation.y, 2);
+              ball.loc(W / 2 + e.rotation.y * 10, H / 2);
 
-    const errorPane = new Pane("SENSOR not available",yellow);
-    if (yes) {      
-        const label = new Label().center();
-        F.on("deviceorientation", e=>{
-        label.text = decimals(e.rotation.y,2) ;
-        ball.loc(W/2 + e.rotation.y * 10, H/2);
-        const a1 = audio1.play();
-        const a2 = audio2.play();
-
-        if (ball.x > W/2) {
-            a1.volume=0;
-            a2.volume=1;
-        } else {
-            a1.volume=1;
-            a2.volume=0;        
+              if (ball.x > W / 2) {
+                a1.volume = 0;
+                a2.volume = 1;
+              } else {
+                a1.volume = 1;
+                a2.volume = 0;
+              }
+              S.update();
+            });
+          } else {
+            errorPane.show();
+          }
         }
-        S.update();
-        });
-
-    } else { 
-        errorPane.show();
-    }   
-}
-        
-} // end ready
-
-</script>
-<meta name="viewport" content="width=device-width, user-scalable=no" />
-</head>
-<body></body>
+      } // end ready
+    </script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body></body>
 </html>
