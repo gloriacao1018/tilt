@@ -2,17 +2,16 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>ZIM - Code Creativity</title>
-
-    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <title>TiltDJ</title>
+    <script src="https://zimjs.org/cdn/1.3.2/createjs.js"></script>
+    <script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
+    <script src="header.js"></script>    
     <script type="module">
       import zim from "https://zimjs.org/cdn/016/zim";
-
-      // See Docs under Frame for FIT, FILL, FULL, and TAG
       new Frame({
         scaling: FIT,
         width: 1290,
-        height: 2796,
+        height: 2896,
         color: yellow,
         outerColor: dark,
         ready: ready,
@@ -20,22 +19,31 @@
         path: "assets/",
         sensors: true,
       });
+
       function ready() {
         const audio1 = new Aud("1.mp3");
         const audio2 = new Aud("2.mp3");
+        const synth = new Synth()
         const ball = new Circle().center();
 
-        const permissionType = "deviceorientation";
-        const ask = new PermissionAsk(init, permissionType);
+        const permissionType1 = "deviceorientation";
+        const permissionType2 = "devicemotion";
+        const ask = new PermissionAsk(init, permissionType1, permissionType2);
+
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
           if (yes) {
-            const label = new Label().center();
+            const label1 = new Label().center();
+            const label2 = new Label().loc(100,100,TOP,LEFT)
             const a1 = audio1.play();
             const a2 = audio2.play();
+            const s1 = synth.play(...[,0,-1500,.3,.3,1.15,,1.01,2.37,-7.65,1100,.05,2,,-0.1,.07,5e-4]);
+            const s2 = synth.play(null,0,-1500,.3,.3,1.15,null,1.01,2.37,-7.65,1100,.05,2,null,-0.1,.07,5e-4); 
 
             F.on("deviceorientation", (e) => {
-              label.text = decimals(e.rotation.y, 2);
+              label1.text = decimals(e.rotation.y, 2);
+              label2.text = decimals(e.acceleration.x, 2);
+
               ball.loc(W / 2 + e.rotation.y * 10, H / 2);
 
               if (ball.x > W / 2) {
@@ -47,11 +55,12 @@
               }
               S.update();
             });
+
           } else {
             errorPane.show();
           }
         }
-      } // end ready
+      } 
     </script>
     <meta name="viewport" content="width=device-width, user-scalable=no" />
   </head>
