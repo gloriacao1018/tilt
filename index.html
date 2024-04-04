@@ -26,7 +26,7 @@ function ready() {
         // use the sensors       
         const label = new Label().center();
         F.on("devicemotion", e=>{
-        label.text = e.acceleration.x +","+ e.acceleration.y +","+ e.acceleration.z;
+        label.text = decimals(e.acceleration.x,2) +","+ decimals(e.acceleration.y,2) +","+ decimals(e.acceleration.z,2);
         if (e.acceleration.x > 0) {
             audio1.play();
         } else if (e.acceleration.x < 0) {
