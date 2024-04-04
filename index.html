@@ -17,7 +17,7 @@ function ready() {
     const audio2 = new Audio("2.mp3"); // For rotation about the X-axis
 
     
-    const permissionType = "deviceorientation"; // or "devicemotion"
+    const permissionType = "devicemotion"; // or "devicemotion"
     const ask = new PermissionAsk(init, permissionType);
     function init(yes) {
     // if the user answers yes to the PermissionAsk
@@ -26,7 +26,7 @@ function ready() {
         // use the sensors      e 
         const label = new Label().center();
         F.on("devicemotion", (e)=>{
-            label.text = decimals(e.rotation.x) +","+ decimals(e.rotation.y) +","+ decimals(e.rotation.z);
+            label.text = e.acceleration.x +","+ e.acceleration.y +","+ e.acceleration.z;
             S.update();
         })
         S.update();
