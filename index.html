@@ -13,28 +13,28 @@ import zim from "https://zimjs.org/cdn/016/zim";
 new Frame({scaling:FIT, width: 1024, height: 768, color: yellow, outerColor: dark, ready: ready, assets:["1.mp3", "2.mp3"], path: "assets/", sensors:true});
 function ready() {
 
-    const audio1 = new Audio("1.mp3"); // For rotation about the Y-axis
-    const audio2 = new Audio("2.mp3"); // For rotation about the X-axis
-
+    const audio1 = new Audio("1.mp3"); 
+    const audio2 = new Audio("2.mp3"); 
+    const ball = new Circle().center()
     
-    const permissionType = "devicemotion"; // or "devicemotion"
+    const permissionType = "deviceorientation"; 
     const ask = new PermissionAsk(init, permissionType);
     function init(yes) {
-    // if the user answers yes to the PermissionAsk
-    const errorPane = new Pane("SENSOR not available",yellow);
+
+        const errorPane = new Pane("SENSOR not available",yellow);
     if (yes) {      
-        // use the sensors       
         const label = new Label().center();
-        F.on("devicemotion", e=>{
-        label.text = decimals(e.acceleration.x,2) +","+ decimals(e.acceleration.y,2) +","+ decimals(e.acceleration.z,2);
-        if (e.acceleration.x > 0) {
-            audio1.play();
-        } else if (e.acceleration.x < 0) {
-            audio2.play();
-        }
+        F.on("deviceorientation", e=>{
+        label.text = decimals(e.rotation.x,2) +","+ decimals(e.rotation.y,2) +","+ decimals(e.rotation.z,2);
+        ball.loc(W/2 + e.rotation.x * 100, H/2);
+        // if (e.rotation.x > 0) {
+        //     audio1.play();
+        // } else if (e.rotation.x < 0) {
+        //     audio2.play();
+        // }
         S.update();
         });
-    } else { // answered no to PermissionAsk dialog      
+    } else { 
         errorPane.show();
     }   
 }
