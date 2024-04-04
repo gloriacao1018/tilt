@@ -27,11 +27,11 @@ function ready() {
         F.on("deviceorientation", e=>{
         label.text = decimals(e.rotation.x,2) +","+ decimals(e.rotation.y,2) +","+ decimals(e.rotation.z,2);
         ball.loc(W/2 + e.rotation.x * 100, H/2);
-        // if (e.rotation.x > 0) {
-        //     audio1.play();
-        // } else if (e.rotation.x < 0) {
-        //     audio2.play();
-        // }
+        if (e.rotation.x > 0) {
+            audio1.play();
+        } else if (e.rotation.x < 0) {
+            audio2.play();
+        }
         S.update();
         });
     } else { 
