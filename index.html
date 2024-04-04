@@ -27,7 +27,12 @@ function ready() {
         const label = new Label().center();
         F.on("devicemotion", e=>{
         label.text = e.acceleration.x +","+ e.acceleration.y +","+ e.acceleration.z;
-            S.update();
+        if (e.acceleration.x > 0) {
+            audio1.play();
+        } else if (e.acceleration.x < 0) {
+            audio2.play();
+        }
+        S.update();
         });
     } else { // answered no to PermissionAsk dialog      
         errorPane.show();
