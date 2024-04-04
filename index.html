@@ -10,7 +10,7 @@
 import zim from "https://zimjs.org/cdn/016/zim";
 
 // See Docs under Frame for FIT, FILL, FULL, and TAG
-new Frame({scaling:FIT, width: 1024, height: 768, color: blue, outerColor: dark, ready: ready, assets:["1.mp3", "2.mp3"], path: "assets/", sensors:true});
+new Frame({scaling:FIT, width: 1024, height: 768, color: yellow, outerColor: dark, ready: ready, assets:["1.mp3", "2.mp3"], path: "assets/", sensors:true});
 function ready() {
 
     const audio1 = new Audio("1.mp3"); 
@@ -25,11 +25,12 @@ function ready() {
     if (yes) {      
         const label = new Label().center();
         F.on("deviceorientation", e=>{
-        label.text = decimals(e.rotation.x,2) +","+ decimals(e.rotation.y,2) +","+ decimals(e.rotation.z,2);
-        ball.loc(W/2 + e.rotation.x * 100, H/2);
-        if (e.rotation.x > 0) {
+        label.text = decimals(e.rotation.y,2) ;
+        ball.loc(W/2 + e.rotation.y * 100, H/2);
+        
+        if (e.rotation.y > 0) {
             audio1.play();
-        } else if (e.rotation.x < 0) {
+        } else if (e.rotation.y < 0) {
             audio2.play();
         }
         S.update();
