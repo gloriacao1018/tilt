@@ -15,7 +15,7 @@
         color: yellow,
         outerColor: dark,
         ready: ready,
-        assets: ["1.mp3", "2.mp3"],
+        assets: ["1.mp3", "2.mp3", "3.mp3"],
         path: "assets/",
         sensors: true,
       });
@@ -23,11 +23,13 @@
       function ready() {
         const audio1 = new Aud("1.mp3");
         const audio2 = new Aud("2.mp3");
-        const synth = new Synth()
-        const ball1 = new Circle().center().wiggle("x", W/2, 50, W/2, 1, 3);
-        const ball2 = new Circle().center().wiggle("y", H/2, 50, H/2, 1, 3);
+        const audio3 = new Aud("3.mp3");
+        const synth = new Synth();
+        const ball1 = new Circle().center().wiggle("x", W / 2, 50, W / 2, 1, 3);
+        const ball2 = new Circle().center().wiggle("y", H / 2, 50, H / 2, 1, 3);
+        /////////////////////////////////
 
-
+        ///////////////////////////////////////////////////////////
         // const permissionType1 = "deviceorientation";
         // const permissionType2 = "devicemotion";
         // const ask = new PermissionAsk(init, permissionType1, permissionType2);
@@ -37,24 +39,75 @@
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
           if (yes) {
-            const label1 = new Label().center();
+            // const label1 = new Label().center();
 
             const a1 = audio1.play();
             const a2 = audio2.play();
-            
-            const tone = synth.tone(0,"A",)
+            const a3 = audio3.play();
+
+            let tone;
 
             // F.on("deviceorientation", (e) => {
-            Ticker.add(()=>{
+            Ticker.add(() => {
               // label1.text = decimals(e.rotation.y, 2);
               // ball1.loc(W / 2 + e.rotation.y * 10, H / 2);
-              
               if (ball1.x > W / 2) {
-                a1.volume = 0;
-                a2.volume = 1;
-              } else {
-                a1.volume = 1;
+                a1.volume = 0.1;
                 a2.volume = 0;
+                a3.volume = 0;
+              } else if (ball1.x > 600 && ball1.x < 700) {
+                a3.volume = 0.1;
+                a1.volume = 0;
+                a2.volume = 0;
+              } else {
+                a1.volume = 0;
+                a2.volume = 0.1;
+                a3.volume = 0;
+              }
+
+              if (ball2.y > 2000) {
+                if (!tone) {
+                  tone = synth.tone({
+                    volume: 2,
+                    note: "C1",
+                    shape: SQUARE,
+
+                    wahAmount: 3000,
+                    wahRate: 0.5,
+                    wahThroat: 10,
+                    wahNote: "A5",
+                    wahShape: SINE,
+
+                    vibratoAmount: 1000,
+                    vibratoRate: 2,
+                    vibratoShape: SINE,
+                  });
+                }
+              } else if (ball2.y < 500) {
+                if (!tone) {
+                  tone = synth.tone({
+                    volume: 2,
+                    note: "A1",
+                    shape: SQUARE,
+
+                    tremeloAmount: 3000,
+                    tremeloRate: 0.5,
+                    tremeloThroat: 10,
+                    tremeloNote: "A5",
+                    tremeloShape: SINE,
+
+                    wahAmount: 3000,
+                    wahRate: 0.5,
+                    wahThroat: 10,
+                    wahNote: "A5",
+                    wahShape: SINE,
+                  });
+                }
+              } else {
+                if (tone) {
+                  tone.pause();
+                  tone = null;
+                }
               }
               S.update();
             });
@@ -71,16 +124,16 @@
             //   }
             //   S.update();
             // })
-
           } else {
             errorPane.show();
           }
           S.update();
-
         }
 
-        //Create four methods so that when user clicks 
-      } 
+        //Create four methods so that when user clicks it changes the "effect" of the sound
+        //"WAH""VIBRATO""TREMELO"
+        //Maybe create a shape on top of that too
+      } //end ready
     </script>
     <meta name="viewport" content="width=device-width, user-scalable=no" />
   </head>
