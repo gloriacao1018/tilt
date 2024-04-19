@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>TiltDJ</title>
+    <title>TiltDJ(test)</title>
     <!-- <script src="https://zimjs.org/cdn/1.3.2/createjs.js"></script>
     <script src="https://zimjs.org/cdn/cat/00/zim.js"></script>
     <script src="header.js"></script>     -->
@@ -10,12 +10,12 @@
       import zim from "https://zimjs.org/cdn/016/zim";
       new Frame({
         scaling: FIT,
-        width: 1290,
+        width: 1500,
         height: 2896,
         color: yellow,
         outerColor: dark,
         ready: ready,
-        assets: ["1.mp3", "2.mp3", "3.mp3"],
+        assets: ["1.mp3", "2.mp3", "3.mp3", ],
         path: "assets/",
         sensors: true,
       });
@@ -28,6 +28,70 @@
         const ball1 = new Circle().center().wiggle("x", W / 2, 50, W / 2, 1, 3);
         const ball2 = new Circle().center().wiggle("y", H / 2, 50, H / 2, 1, 3);
         /////////////////////////////////
+        let tone;
+
+        // Create four tiles
+        const wahTile = new Rectangle(200, 200, "red").pos(100, 100).cur();
+        const vibratoTile = new Rectangle(200, 200, "blue").pos(400, 100).cur();
+        const tremeloTile = new Rectangle(200, 200, "green")
+          .pos(700, 100)
+          .cur();
+        const noneTile = new Rectangle(200, 200, "purple").pos(1000, 100).cur();
+
+        // Assign click events to each tile
+        wahTile.on("click", () => {
+          tone = synth.tone({
+            volume: 2,
+            note: "C1",
+            shape: SQUARE,
+            wahAmount: 3000,
+            wahRate: 0.5,
+            wahThroat: 10,
+            wahNote: "A5",
+            wahShape: SINE,
+          });
+        });
+
+        vibratoTile.on("click", () => {
+          tone = synth.tone({
+            volume: 2,
+            note: "C1",
+            shape: SQUARE,
+            vibratoAmount: 1000,
+            vibratoRate: 2,
+            vibratoShape: SINE,
+          });
+        });
+
+        tremeloTile.on("click", () => {
+          tone = synth.tone({
+            volume: 2,
+            note: "C1",
+            shape: SQUARE,
+            tremeloAmount: 3000,
+            tremeloRate: 0.5,
+            tremeloThroat: 10,
+            tremeloNote: "A5",
+            tremeloShape: SINE,
+          });
+        });
+
+        noneTile.on("click", () => {
+          if (tone) {
+            tone.pause();
+            tone = null;
+          }
+        });
+        const wahLabel = new Label("Wah", 30, "Arial", "white").center(wahTile);
+        const vibratoLabel = new Label("Vibrato", 30, "Arial", "white").center(
+          vibratoTile
+        );
+        const tremeloLabel = new Label("Tremelo", 30, "Arial", "white").center(
+          tremeloTile
+        );
+        const noneLabel = new Label("None", 30, "Arial", "white").center(
+          noneTile
+        );
 
         ///////////////////////////////////////////////////////////
         // const permissionType1 = "deviceorientation";
@@ -44,8 +108,6 @@
             const a1 = audio1.play();
             const a2 = audio2.play();
             const a3 = audio3.play();
-
-            let tone;
 
             // F.on("deviceorientation", (e) => {
             Ticker.add(() => {
@@ -112,27 +174,127 @@
               S.update();
             });
 
-            // F.on("devicemotion", (e) => {
-            //   label2.text = decimals(e.acceleration.x, 2);
-            //   ball2.loc(W / 2 + e.acceleration.y * 10, H);
-            //   if (ball2.x > W / 2) {
-            //     s1.volume = 0;
-            //     s2.volume = 1;
-            //   } else {
-            //     s1.volume = 1;
-            //     s2.volume = 0;
-            //   }
-            //   S.update();
-            // })
+            F.on("devicemotion", (e) => {
+              label2.text = decimals(e.acceleration.x, 2);
+              ball2.loc(W / 2 + e.acceleration.y * 10, H);
+              if (ball2.x > W / 2) {
+                s1.volume = 0;
+                s2.volume = 1;
+              } else {
+                s1.volume = 1;
+                s2.volume = 0;
+              }
+              S.update();
+            });
           } else {
             errorPane.show();
           }
           S.update();
         }
 
+        ///////////////////////////////////////////////////////////
+         // Initialize  SoundWave instances
+         const barSoundWave = new SoundWave(50, tone);
+        const mouthSoundWave = new SoundWave({
+          num: 2,
+          input:tone,
+          min: -120,
+          smoothing: 0.75,
+        });
+        const circleSoundWave = new SoundWave(50, tone, 0.195);
+
+        // Create three tiles
+        const mouthTile = new Circle(150, 150, "red").pos(100, H - 500).cur();
+        const barTile = new Circle(150, 150, "blue").pos(500, H - 500).cur();
+        const circleTile = new Circle(150, 150, "green")
+          .pos(900, H - 500)
+          .cur();
+
+        // Create labels for each tile
+        const mouthLabel = new Label("Mouth", 30, "Arial", "white").center(
+          mouthTile
+        );
+        const barLabel = new Label("Bar", 30, "Arial", "white").center(barTile);
+        const circleLabel = new Label("Circle", 30, "Arial", "white").center(
+          circleTile
+        );
+
+        // Assign click events to each tile
+        mouthTile.on("click", () => {
+          // Change soundwave pattern to mouth
+          synth.wave = mouthSoundWave;
+          startWave(mouthSoundWave);
+        });
+
+        barTile.on("click", () => {
+          // Change soundwave pattern to bar
+          synth.wave = barSoundWave;
+          startWave(barSoundWave);
+        });
+
+        circleTile.on("click", () => {
+          // Change soundwave pattern to circle
+          synth.wave = circleSoundWave;
+          startWave(circleSoundWave);
+        });
+
+        const scope = new Container(1290, 2896).pos(0, 0, CENTER);
+        var backing = new Rectangle(scope.width, scope.height, clear).addTo(
+          scope
+        );
+        var backing = new Circle(
+          (scope.width / 2) * 0.95,
+          new RadialColor(
+            [purple.darken(0.8), black.toAlpha(0.5)],
+            [0, 1],
+            0,
+            0,
+            (scope.width / 2) * 0.95,
+            0,
+            0,
+            0
+          ),
+          grey
+        ).center(scope);
+
+        function startWave() {
+          var soundWave = new SoundWave(50, tone);
+          soundWave.on("ready", function () {
+            var bars = new Container(scope.width, scope.height)
+              .addTo(scope)
+              .setMask(backing);
+            var width = bars.width;
+            var gap = 3;
+            // we can use soundWave.num to tell us how many bars to make
+            loop(soundWave.num, function (i, total) {
+              // make each bar
+              var bar = new Rectangle(width / total - gap, 300, purple);
+              // move the bar over a little each time and set the registration point to the bottom
+              bar
+                .addTo(bars)
+                .mov((i * width) / total, bars.height / 2)
+                .reg(0, 150);
+            });
+            Ticker.add(function () {
+              var data = soundWave.calculate();
+              // loop throught the bars and set the height of the bar to the associated soundWave data
+              // we multiply by 2 to magnify the data a little
+              loop(bars, function (bar, i) {
+                bar.heightOnly = data[i] * 2;
+              });
+            });
+          });
+        }
+        //UI:
         //Create four methods so that when user clicks it changes the "effect" of the sound
-        //"WAH""VIBRATO""TREMELO"
-        //Maybe create a shape on top of that too
+        // 1. Wah
+        // 2. Vibrato
+        // 3. Tremelo
+        // 4. None
+        //Soundwave
+        // 1. mouth
+        // 2. bar
+        // 3. circle
       } //end ready
     </script>
     <meta name="viewport" content="width=device-width, user-scalable=no" />
