@@ -26,8 +26,12 @@
         const audio2 = new Aud("2.mp3");
         const audio3 = new Aud("3.mp3");
         const synth = new Synth();
-        const ball2 = new Circle(20,"#f5776e").center().wiggle("y", H / 2, 50, H / 2, 1, 3);
-        const ball1 = new Circle(20, "#89defa").center().wiggle("x", W / 2, 50, W / 2, 1, 3);
+        const ball2 = new Circle(20, "#f5776e")
+          .center()
+          .wiggle("y", H / 2, 50, H / 2, 1, 3);
+        const ball1 = new Circle(20, "#89defa")
+          .center()
+          .wiggle("x", W / 2, 50, W / 2, 1, 3);
         let tone;
 
         init(true);
@@ -125,7 +129,7 @@
         }
 
         //Tiles for visual effects
- const scope = new Container(1290, 2896).pos(0, 0, CENTER);
+        const scope = new Container(1290, 2896).pos(0, 0, CENTER);
         var backing = new Rectangle(scope.width, scope.height, clear).addTo(
           scope
         );
@@ -164,9 +168,21 @@
 
         let barSoundWave = new SoundWave(50, tone);
         let barWave;
+
+        let isBarWaveActive = false;
+
         barTile.on("click", () => {
-          synth.wave = barSoundWave;
-          startBarWave();
+          if (!isBarWaveActive) {
+            synth.wave = barSoundWave;
+            startBarWave();
+          } else {
+            // Code to stop the bar wave or switch to a different wave
+            synth.wave = null; // or any default wave
+            // stopBarWave(); // if you have a function to stop the bar wave
+          }
+
+          // Toggle the state
+          isBarWaveActive = !isBarWaveActive;
         });
 
         function startBarWave() {
@@ -200,7 +216,7 @@
           });
         }
 
-        let mouthSoundWave = new SoundWave(50, tone); 
+        let mouthSoundWave = new SoundWave(50, tone);
         let mouthWave;
         mouthTile.on("click", () => {
           synth.wave = mouthSoundWave;
@@ -210,48 +226,83 @@
         function startMouthWave() {
           if (mouthWave) return;
 
-          var mouth = new Blob({
-            color: "red",
-            borderColor: "pink",
-            borderWidth: 30,
-            showControls: false,
-            interactive: false,
-            points: [
-              [-5.9, 31.5, 0, 0, -38.2, -45.5, 35.6, -46.4, "free"],
-              [100.8, 32.9, 0, 0, 0, 0, 0, 0, "none"],
-              [52.3, 86.5, 0, 0, 32.8, -12.6, -32.8, 12.6, "mirror"],
-              [-50.6, 88.2, 0, 0, 29.4, 12.6, -33.1, -14.1, "mirror"],
-              [-106.7, 39.6, 0, 0, 0, 0, 0, 0, "none"],
-            ],
-          })
-            .centerReg()
-            .alp(0.75)
-            .rot(-2)
-            .mov(0, 125)
-            .sca(5)
-            .addTo(scope)
-            .setMask(backing);
-
-          mouthSoundWave.on("ready", () => {
-            Ticker.add(() => {
-              let data = mouthSoundWave.calculate();
-              mouth.heightOnly = constrain(data[1] * 200, 100, 300);
-              mouth.widthOnly = 350 - constrain(data[0] * 200, 150, 200);
-              zog(
-                `Data: ${data}, Mouth Height: ${mouth.heightOnly}, Mouth Width: ${mouth.widthOnly}`
-              );
+          mouthWave = new SoundWave(50, tone);
+          mouthWave.on("ready", function () {
+            var mouths = new Container(scope.width, scope.height)
+              .addTo(scope)
+              .setMask(backing);
+            var width = mouths.width;
+            var gap = 3;
+            // we can use mouthWave.num to tell us how many mouths to make
+            loop(mouthWave.num, function (i, total) {
+              // make each mouth
+              var mouth = new Blob({
+                color: red,
+                borderColor: pink,
+                borderWidth: 30,
+                showControls: false,
+                points: [
+                  [-5.9, 31.5, 0, 0, -38.2, -45.5, 35.6, -46.4, "free"],
+                  [100.8, 32.9, 0, 0, 0, 0, 0, 0, "none"],
+                  [52.3, 86.5, 0, 0, 32.8, -12.6, -32.8, 12.6, "mirror"],
+                  [-50.6, 88.2, 0, 0, 29.4, 12.6, -33.1, -14.1, "mirror"],
+                  [-106.7, 39.6, 0, 0, 0, 0, 0, 0, "none"],
+                ],
+              });
+              // move the mouth over a little each time and set the registration point to the bottom
+              mouth
+                .addTo(mouths)
+                .mov((i * width) / total, mouths.height / 2)
+                .reg(0, 150);
+            });
+            Ticker.add(function () {
+              var data = mouthWave.calculate();
+              // loop throught the mouths and set the height of the mouth to the associated mouthWave data
+              // we multiply by 2 to magnify the data a little
+              loop(mouths, function (mouth, i) {
+                mouth.heightOnly = data[i] * 600;
+              });
             });
           });
         }
 
-
         let circleSoundWave = new SoundWave(50, tone);
+        let circleWave;
         circleTile.on("click", () => {
           synth.wave = circleSoundWave;
           startCircleWave();
         });
 
+        function startCircleWave() {
+          if (circleWave) return;
 
+          circleWave = new SoundWave(50, tone);
+          circleWave.on("ready", function () {
+            var circles = new Container(scope.width, scope.height)
+              .addTo(scope)
+              .setMask(backing);
+            var width = circles.width;
+            var gap = 3;
+            // we can use circleWave.num to tell us how many circles to make
+            loop(circleWave.num, function (i, total) {
+              // make each circle
+              var circle = new Circle(45, "#86b6db".toAlpha(0.6), "#86b6db".toAlpha(0.5));
+              // move the circle over a little each time and set the registration point to the bottom
+              circle
+                .addTo(circles)
+                .mov((i * width) / total, circles.height / 2)
+                .reg(0, 150);
+            });
+            Ticker.add(function () {
+              var data = circleWave.calculate();
+              // loop throught the circles and set the height of the circle to the associated circleWave data
+              // we multiply by 2 to magnify the data a little
+              loop(circles, function (circle, i) {
+                circle.heightOnly = data[i] * 600;
+              });
+            });
+          });
+        }
 
         //tiles for different sound effects
         const wahTile = new Rectangle(300, 300, "coral").pos(150, 300).cur();
