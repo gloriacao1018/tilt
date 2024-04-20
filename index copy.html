@@ -15,7 +15,19 @@
         color: dark,
         outerColor: dark,
         ready: ready,
-        assets: ["1.mp3", "2.mp3", "3.mp3", "4.mp3", "bg.png"],
+        font: "matrix",
+        assets: [
+          "1.mp3",
+          "2.mp3",
+          "3.mp3",
+          "4.mp3",
+          "riser.mp3",
+          "5.mp3",
+          "6.mp3",
+          "7.mp3",
+          "bg.png",
+          "matrix.ttf",
+        ],
         path: "assets/",
         sensors: true,
       });
@@ -25,6 +37,11 @@
         const audio1 = new Aud("1.mp3");
         const audio2 = new Aud("2.mp3");
         const audio3 = new Aud("3.mp3");
+        const audio4 = new Aud("4.mp3", 0.3).play();
+        const audio5 = new Aud("5.mp3");
+        const audio6 = new Aud("6.mp3");
+        const audio7 = new Aud("7.mp3");
+        const riser = new Aud("riser.mp3");
         const synth = new Synth();
         const ball2 = new Circle(20, "#f5776e")
           .center()
@@ -34,16 +51,36 @@
           .wiggle("x", W / 2, 50, W / 2, 1, 3);
         let tone;
 
+        var instruction = new LabelOnPath({
+          label: new Label({
+            text: "  Tilt   Your  Device ",
+            font: "Matrix",
+            size: 70,
+          }),
+          path: new Blob([
+            [-10.4, -172.4, 0, 0, -49.3, 2.7, 49.3, -2.7, "mirror"],
+            [205.3, -1, 0, 0, -17, -186.8, 17, 186.8, "mirror"],
+            [-1.5, 211.3, 0, 0, 99, 8.2, -99, -8.2],
+            [-185.2, -1, 0, 0, -0.7, 139.8, 0.7, -139.8, "mirror"],
+          ])
+            .center()
+            .mov(0, 100),
+          showPath: false,
+          interactive: false,
+        }).center();
+
         init(true);
 
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
           if (yes) {
             // const label1 = new Label().center();
-
             const a1 = audio1.play();
             const a2 = audio2.play();
             const a3 = audio3.play();
+            const s1 = audio5.play();
+            const s2 = audio6.play();
+            const s3 = audio7.play();
 
             // F.on("deviceorientation", (e) => {
             Ticker.add(() => {
@@ -63,49 +100,19 @@
                 a3.volume = 0;
               }
 
+              //replace synth with audio and change acceleration to rotation
               if (ball2.y > 2000) {
-                if (!tone) {
-                  tone = synth.tone({
-                    volume: 2,
-                    note: "C1",
-                    shape: SQUARE,
-
-                    wahAmount: 3000,
-                    wahRate: 0.5,
-                    wahThroat: 10,
-                    wahNote: "A5",
-                    wahShape: SINE,
-
-                    vibratoAmount: 1000,
-                    vibratoRate: 2,
-                    vibratoShape: SINE,
-                  });
-                }
+                s1.volume = 0.1;
+                s2.volume = 0;
+                s3.volume = 0;
               } else if (ball2.y < 500) {
-                if (!tone) {
-                  tone = synth.tone({
-                    volume: 2,
-                    note: "A1",
-                    shape: SQUARE,
-
-                    tremeloAmount: 3000,
-                    tremeloRate: 0.5,
-                    tremeloThroat: 10,
-                    tremeloNote: "A5",
-                    tremeloShape: SINE,
-
-                    wahAmount: 3000,
-                    wahRate: 0.5,
-                    wahThroat: 10,
-                    wahNote: "A5",
-                    wahShape: SINE,
-                  });
-                }
+                s1.volume = 0.1;
+                s2.volume = 0;
+                s3.volume = 0;
               } else {
-                if (tone) {
-                  tone.pause();
-                  tone = null;
-                }
+                s1.volume = 0.1;
+                s2.volume = 0;
+                s3.volume = 0;
               }
               S.update();
             });
@@ -130,13 +137,37 @@
 
         //Tiles for visual effects
         const scope = new Container(1290, 2896).pos(0, 0, CENTER);
-        var backing = new Rectangle(scope.width, scope.height, clear).addTo(
-          scope
-        );
-        var backing = new Circle(
+        const blob1 = new Blob({
+          color: "#F48260",
+          interactive: false,
+        })
+          .center()
+          .sca(7)
+          .alp(0.2)
+          .addTo(scope)
+          .animate({
+            props: { rotation: "360" },
+            time: 7,
+            loop: true,
+          });
+        const blob2 = new Blob({
+          color: "#8FA1AA",
+          interactive: false,
+        })
+          .center()
+          .sca(8)
+          .alp(0.2)
+          .addTo(scope)
+          .animate({
+            props: { rotation: "360" },
+            time: 7,
+            loop: true,
+          });
+
+        const backing = new Circle(
           (scope.width / 2) * 0.95,
           new RadialColor(
-            ["white", "coral".toAlpha(0.5)],
+            ["white".toAlpha(0.8), "coral".toAlpha(0.5)],
             [0, 1],
             0,
             0,
@@ -144,11 +175,18 @@
             0,
             0,
             0
-          ),
-          grey
-        ).center(scope);
+          )
+        )
+          .center(scope)
+          .animate({
+            props: { alpha: 0.5, scale: 0.94 },
+            time: 4,
+            loop: true,
+            rewind: true,
+            ease: "linear",
+          });
 
-        const mouthTile = new Circle(180, "coral", "blue")
+        const heartTile = new Circle(180, "coral", "blue")
           .pos(110, H - 650)
           .cur();
         const barTile = new Circle(180, "coral", "blue")
@@ -158,11 +196,13 @@
           .pos(1010, H - 650)
           .cur();
 
-        const mouthLabel = new Label("Mouth", 30, "Arial", "white").center(
-          mouthTile
+        const heartLabel = new Label("Heart", 50, "Matrix", "white").center(
+          heartTile
         );
-        const barLabel = new Label("Bar", 30, "Arial", "white").center(barTile);
-        const circleLabel = new Label("Circle", 30, "Arial", "white").center(
+        const barLabel = new Label("Bar", 50, "Matrix", "white").center(
+          barTile
+        );
+        const circleLabel = new Label("Circle", 50, "Matrix", "white").center(
           circleTile
         );
 
@@ -176,12 +216,8 @@
             synth.wave = barSoundWave;
             startBarWave();
           } else {
-            // Code to stop the bar wave or switch to a different wave
             synth.wave = null; // or any default wave
-            // stopBarWave(); // if you have a function to stop the bar wave
           }
-
-          // Toggle the state
           isBarWaveActive = !isBarWaveActive;
         });
 
@@ -195,11 +231,8 @@
               .setMask(backing);
             var width = bars.width;
             var gap = 3;
-            // we can use barWave.num to tell us how many bars to make
             loop(barWave.num, function (i, total) {
-              // make each bar
               var bar = new Rectangle(width / total - gap, 300, "coral");
-              // move the bar over a little each time and set the registration point to the bottom
               bar
                 .addTo(bars)
                 .mov((i * width) / total, bars.height / 2)
@@ -207,61 +240,59 @@
             });
             Ticker.add(function () {
               var data = barWave.calculate();
-              // loop throught the bars and set the height of the bar to the associated barWave data
-              // we multiply by 2 to magnify the data a little
+
               loop(bars, function (bar, i) {
-                bar.heightOnly = data[i] * 600;
+                bar.heightOnly = data[i] * 300;
               });
             });
           });
         }
 
-        let mouthSoundWave = new SoundWave(50, tone);
-        let mouthWave;
-        mouthTile.on("click", () => {
-          synth.wave = mouthSoundWave;
-          startMouthWave();
+        let heartSoundWave = new SoundWave(50, tone);
+        let heartWave;
+        heartTile.on("click", () => {
+          synth.wave = heartSoundWave;
+          startheartWave();
         });
 
-        function startMouthWave() {
-          if (mouthWave) return;
+        function startheartWave() {
+          if (heartWave) return;
 
-          mouthWave = new SoundWave(50, tone);
-          mouthWave.on("ready", function () {
-            var mouths = new Container(scope.width, scope.height)
+          heartWave = new SoundWave(50, tone);
+          heartWave.on("ready", function () {
+            var hearts = new Container(scope.width, scope.height)
               .addTo(scope)
               .setMask(backing);
-            var width = mouths.width;
-            var gap = 3;
-            // we can use mouthWave.num to tell us how many mouths to make
-            loop(mouthWave.num, function (i, total) {
-              // make each mouth
-              var mouth = new Blob({
-                color: red,
-                borderColor: pink,
-                borderWidth: 30,
-                showControls: false,
-                points: [
-                  [-5.9, 31.5, 0, 0, -38.2, -45.5, 35.6, -46.4, "free"],
-                  [100.8, 32.9, 0, 0, 0, 0, 0, 0, "none"],
-                  [52.3, 86.5, 0, 0, 32.8, -12.6, -32.8, 12.6, "mirror"],
-                  [-50.6, 88.2, 0, 0, 29.4, 12.6, -33.1, -14.1, "mirror"],
-                  [-106.7, 39.6, 0, 0, 0, 0, 0, 0, "none"],
-                ],
-              });
-              // move the mouth over a little each time and set the registration point to the bottom
-              mouth
-                .addTo(mouths)
-                .mov((i * width) / total, mouths.height / 2)
-                .reg(0, 150);
-            });
+            var width = hearts.width;
+            var gap = 6;
+
+            var heart = new Shape(-108, -100, 216, 200);
+            heart.graphics
+              .f("#d9abba")
+              .p(
+                "AowHHQiRi0jdlRQiekXAHjVQAJkZEuhyQCzhEDJBCQBQAaB0A5QBFAiCZBRQCwh3DRguQDYgwCfAzQD7BRAfDtQANBggcBrQgZBhg0BRQjUFNm4HTQjcDqiwCmQk2ksi4jlg"
+              );
+
             Ticker.add(function () {
-              var data = mouthWave.calculate();
-              // loop throught the mouths and set the height of the mouth to the associated mouthWave data
+              var data = heartWave.calculate();
+              // set the height and width of the heart to the associated heartWave data
               // we multiply by 2 to magnify the data a little
-              loop(mouths, function (mouth, i) {
-                mouth.heightOnly = data[i] * 600;
-              });
+              heart.heightOnly = data[0] * 600;
+              heart.widthOnly = data[0] * 600;
+            });
+
+            // move the heart over a little each time and set the registration point to the bottom
+            heart
+              .addTo(hearts)
+              .mov(width / 2, hearts.height / 2)
+              .reg(0, 50);
+
+            Ticker.add(function () {
+              var data = heartWave.calculate();
+              // set the height and width of the heart to the associated heartWave data
+              // we multiply by 2 to magnify the data a little
+              heart.heightOnly = data[0] * 600;
+              heart.widthOnly = data[0] * 600;
             });
           });
         }
@@ -286,7 +317,11 @@
             // we can use circleWave.num to tell us how many circles to make
             loop(circleWave.num, function (i, total) {
               // make each circle
-              var circle = new Circle(45, "#86b6db".toAlpha(0.6), "#86b6db".toAlpha(0.5));
+              var circle = new Circle(
+                45,
+                "#86b6db".toAlpha(0.6),
+                "#86b6db".toAlpha(0.5)
+              );
               // move the circle over a little each time and set the registration point to the bottom
               circle
                 .addTo(circles)
@@ -305,28 +340,45 @@
         }
 
         //tiles for different sound effects
-        const wahTile = new Rectangle(300, 300, "coral").pos(150, 300).cur();
-        const vibratoTile = new Rectangle(300, 300, "coral")
+        const wahTile = new Rectangle({
+          width: 300,
+          height: 300,
+          color: "coral",
+          corner: [10, 50, 10, 50],
+        })
+          .pos(150, 300)
+          .cur();
+        const vibratoTile = new Rectangle({
+          width: 300,
+          height: 300,
+          color: "coral",
+          corner: [10, 50, 10, 50],
+        })
           .pos(600, 300)
           .cur();
-        const tremeloTile = new Rectangle(300, 300, "coral")
+        const riserTile = new Rectangle({
+          width: 300,
+          height: 300,
+          color: "coral",
+          corner: [10, 50, 10, 50],
+        })
           .pos(1050, 300)
           .cur();
-        const wahLabel = new Label("Wah", 30, "Arial", "white").center(wahTile);
-        const vibratoLabel = new Label("Vibrato", 30, "Arial", "white").center(
+        const wahLabel = new Label("1", 50, "Matrix", "white").center(wahTile);
+        const vibratoLabel = new Label("2", 50, "Matrix", "white").center(
           vibratoTile
         );
-        const tremeloLabel = new Label("Tremelo", 30, "Arial", "white").center(
-          tremeloTile
+        const riserLabel = new Label("Riser", 50, "Matrix", "white").center(
+          riserTile
         );
         wahTile.on("click", () => {
           tone = synth.tone({
             volume: 2,
-            note: "C1",
+            note: "A1",
             shape: SQUARE,
-            wahAmount: 3000,
+            wahAmount: 1500,
             wahRate: 0.5,
-            wahThroat: 10,
+            wahThroat: 15,
             wahNote: "A5",
             wahShape: SINE,
           });
@@ -337,23 +389,16 @@
             volume: 2,
             note: "C1",
             shape: SQUARE,
-            vibratoAmount: 1000,
-            vibratoRate: 2,
-            vibratoShape: SINE,
+            wahAmount: 200,
+            wahRate: 0.5,
+            wahThroat: 10,
+            wahNote: "A5",
+            wahShape: SINE,
           });
         });
 
-        tremeloTile.on("click", () => {
-          tone = synth.tone({
-            volume: 2,
-            note: "C1",
-            shape: SQUARE,
-            tremeloAmount: 3000,
-            tremeloRate: 0.5,
-            tremeloThroat: 10,
-            tremeloNote: "A5",
-            tremeloShape: SINE,
-          });
+        riserTile.on("click", () => {
+          riser.play();
         });
       } //end ready
     </script>
