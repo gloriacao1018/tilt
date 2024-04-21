@@ -13,7 +13,7 @@
         scaling: FIT,
         width: 1500,
         height: 2896,
-        color: blue,
+        color: dark,
         outerColor: dark,
         ready: ready,
         assets: ["1.mp3", "2.mp3", "3.mp3"],
@@ -31,15 +31,14 @@
         const audio7 = new Aud("7.mp3");
         const riser = new Aud("riser.mp3");
 
-        const scope = new Container(1290, 2896).pos(0, 0, CENTER);
+        const scope = new Container(1500, 2896).pos(0, 0, CENTER);
         const synth = new Synth();
         
         const ball1 = new Circle(20, "#f5776e").center();
         const ball2 = new Circle(20, "#89defa").center();
 
-        const permissionType1 = "deviceorientation";
-        const permissionType2 = "devicemotion";
-        const ask = new PermissionAsk(init, permissionType1, permissionType2);
+        const permissionType = "deviceorientation";
+        const ask = new PermissionAsk(init, permissionType);
 
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
@@ -73,7 +72,7 @@
               }
               S.update();
             });
-            F.on("deviceorientationj", (e) => {
+            F.on("deviceorientation", (e) => {
               ball2.loc(
                 W / 2 + e.rotation.x * 10,
                 H / 2 + e.rotation.y * 10
