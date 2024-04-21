@@ -75,11 +75,11 @@
 
             F.on("devicemotion", (e) => {
 
-              label1.text = decimals(e.rotation.y, 2);
+              label1.text = decimals(e.acceleration.x, 2);
 
               ball2.loc(
-                W / 2 + e.rotation.x * 10,
-                H / 2 + e.rotation.y * 10
+                W / 2 + e.acceleration.x * 10,
+                H / 2 + e.acceleration.y * 10
               );
 
               if (ball2.y > 500) {
