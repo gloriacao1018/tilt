@@ -7,7 +7,6 @@
     <!-- zimjs.com - JavaScript Canvas Framework -->
     <script type="module">
       import zim from "https://zimjs.org/cdn/016/zim";
-
       // See Docs under Frame for FIT, FILL, FULL, and TAG
       new Frame({
         scaling: FIT,
@@ -37,8 +36,10 @@
         const ball1 = new Circle(20, "#f5776e").center();
         const ball2 = new Circle(20, "#89defa").center();
 
-        const permissionType = "deviceorientation";
-        const ask = new PermissionAsk(init, permissionType);
+        const permissionType1 = "deviceorientation";
+        const permissionType2 = "devicemotion";
+
+        const ask = new PermissionAsk(init, permissionType1, permissionType2);
 
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
@@ -54,7 +55,6 @@
             let tone;
 
             F.on("deviceorientation", (e) => {
-              label1.text = decimals(e.rotation.y, 2);
               ball1.loc(W / 2 + e.rotation.y * 10, H / 2);
 
               if (ball1.x > W / 2) {
@@ -72,17 +72,21 @@
               }
               S.update();
             });
-            F.on("deviceorientation", (e) => {
+
+            F.on("devicemotion", (e) => {
+
+              label1.text = decimals(e.rotation.y, 2);
+
               ball2.loc(
                 W / 2 + e.rotation.x * 10,
                 H / 2 + e.rotation.y * 10
               );
 
-              if (ball2.y > 1000) {
+              if (ball2.y > 500) {
                 s1.volume = 0.1;
                 s2.volume = 0;
                 s3.volume = 0;
-              } else if (ball2.y < 950) {
+              } else if (ball2.y < 150) {
                 if (!tone) {
                   s1.volume = 0.1;
                 s2.volume = 0;
@@ -391,6 +395,7 @@
         })
           .pos(150, 300)
           .cur();
+
         const vibratoTile = new Rectangle({
           width: 300,
           height: 300,
