@@ -52,8 +52,6 @@
             const s2 = audio6.play();
             const s3 = audio7.play();
 
-            let tone;
-
             F.on("deviceorientation", (e) => {
               ball1.loc(W / 2 + e.rotation.y * 10, H / 2);
 
@@ -73,13 +71,13 @@
               S.update();
             });
 
-            F.on("devicemotion", (e) => {
+            F.on("deviceorientation", (e) => {
 
-              label1.text = decimals(e.acceleration.x, 2);
+              label1.text = decimals(e.rotation.x, 2);
 
               ball2.loc(
-                W / 2 + e.acceleration.x * 10,
-                H / 2 + e.acceleration.y * 10
+                W / 2 + e.rotation.x * 10,
+                H / 2 + e.rotation.y * 10
               );
 
               if (ball2.y > 500) {
@@ -376,7 +374,7 @@
             });
           });
         }
-
+        let tone;
         //tiles for different sound effects
         const wahTile = new Rectangle({
           width: 300,
@@ -473,6 +471,7 @@
         riserTile.on("click", () => {
           riser.play();
         });
+        
       } // end ready
     </script>
     <meta name="viewport" content="width=device-width, user-scalable=no" />
