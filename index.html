@@ -57,7 +57,6 @@
         function init(yes) {
           const errorPane = new Pane("SENSOR not available", yellow);
           if (yes) {
-            const label1 = new Label().center();
             const a1 = audio1.play();
             const a2 = audio2.play();
             const a3 = audio4.play();
@@ -72,7 +71,7 @@
                 a1.volume = 0.1;
                 a2.volume = 0;
                 a3.volume = 0;
-              } else if (ball1.x > 600 && ball1.x < 700) {
+              } else if (ball1.x > 700 && ball1.x < 800) {
                 a3.volume = 0.1;
                 a1.volume = 0;
                 a2.volume = 0;
@@ -85,15 +84,13 @@
             });
 
             F.on("deviceorientation", (e) => {
-              label1.text = decimals(e.rotation.x, 2);
-
               ball2.loc(H / 2 + e.rotation.x * 10);
 
               if (ball2.y > H / 2) {
                 s1.volume = 0.1;
                 s2.volume = 0;
                 s3.volume = 0;
-              } else if (ball2.y > 0 && ball2.y < 10) {
+              } else if (ball2.y > 1300 && ball2.y < 1500 ) {
                 if (!tone) {
                   s1.volume = 0.1;
                   s2.volume = 0;
