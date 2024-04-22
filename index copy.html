@@ -193,7 +193,15 @@
           path: blob.center().mov(0, 100),
           showPath: false,
           interactive: false,
-        }).center();
+        })
+          .center()
+          .centerReg()
+          .animate({
+            props: { rotation: "360" },
+            time: 10,
+            loop: true,
+            ease: "linear",
+          });
 
         const heartTile = new Circle(
           170,
@@ -254,9 +262,9 @@
           circleTile
         );
 
-        //         createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin]);
+        // createjs.Sound.registerPlugins([createjs.HTMLAudioPlugin]);
 
-        //         var song = F.asset("3.mp3");
+        // var song = F.asset("3.mp3");
         // var soundInstance = song.play();
 
         // Pass the sound instance to the SoundWave constructor
@@ -397,7 +405,7 @@
         }
 
         //tiles for different sound effects
-        const wahTile = new Rectangle({
+        const spiritTile = new Rectangle({
           width: 300,
           height: 300,
           color: new RadialColor(
@@ -414,7 +422,7 @@
         })
           .pos(150, 300)
           .cur();
-        const vibratoTile = new Rectangle({
+        const ghostTile = new Rectangle({
           width: 300,
           height: 300,
           color: new RadialColor(
@@ -448,16 +456,16 @@
         })
           .pos(1050, 300)
           .cur();
-        const wahLabel = new Label("Don", 50, "Matrix", "white").center(
-          wahTile
+        const spiritLabel = new Label("Spirit", 50, "Matrix", "white").center(
+          spiritTile
         );
-        const vibratoLabel = new Label("Mzh", 50, "Matrix", "white").center(
-          vibratoTile
+        const ghostLabel = new Label("Ghost", 50, "Matrix", "white").center(
+          ghostTile
         );
         const riserLabel = new Label("Riser", 50, "Matrix", "white").center(
           riserTile
         );
-        wahTile.on("click", () => {
+        spiritTile.on("click", () => {
           tone = synth.tone({
             volume: 50,
             shape: SINE,
@@ -471,16 +479,15 @@
           }, 2);
         });
 
-        vibratoTile.on("click", () => {
+        ghostTile.on("click", () => {
           tone = synth.tone({
-            volume: 50,
-            note: "C1",
+            volume: 1,
+            note: "A1",
             shape: SQUARE,
-            vibratoAmount: 3000,
-            vibratoRate: 0.5,
-            vibratoThroat: 15,
-            vibratoNote: "A1",
-            vibratoShape: SINE,
+            wahAmount: 1000,
+            wahRate: 1,
+            wahShape: SINE, // default
+            wahThroat: 5,
           });
 
           setTimeout(() => {
